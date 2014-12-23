@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/f2/catkin_ws_h/src/pcl_test/matrix_transform.cpp
+iostream
+-
+pcl/io/pcd_io.h
+-
+pcl/io/ply_io.h
+-
+pcl/point_cloud.h
+-
+pcl/console/parse.h
+-
+pcl/common/transforms.h
+-
+pcl/visualization/pcl_visualizer.h
+-
+

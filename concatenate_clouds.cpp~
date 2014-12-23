@@ -1,0 +1,35 @@
+#include <iostream>
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
+#include <pcl/visualization/cloud_viewer.h>
+#include <pcl_conversions/pcl_conversions.h>
+#include <pcl/ros/conversions.h>
+
+int
+  main (int argc, char** argv)
+{
+     // load point cloud
+   pcl::PointCloud<pcl::PointXYZ>  cloud, cloud2, cloud3;
+   pcl::PCLPointCloud2 cloud_, cloud2_, cloud3_;
+   pcl::io::loadPCDFile ("piont_white_0022.pcd", cloud_);
+   pcl::io::loadPCDFile ("piont_white_0031.pcd", cloud2_);
+   //pcl_conversions::fromPCL
+   pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloudPtr(cloud3);
+
+  pcl::fromPCLPointCloud2 (cloud_, cloud);
+  pcl::fromPCLPointCloud2 (cloud2_, cloud2);
+   cloud3 = cloud;
+   cloud3 += cloud2;
+   //pcl::fromPCLPointCloud2 (cloud3_, cloud);
+   // visualize normals
+   pcl::visualization::PCLVisualizer viewer("PCL Viewer");
+   viewer.setBackgroundColor (0.0, 0.0, 0.5);
+   viewer.addPointCloud(cloudPtr);
+   //viewer.addPointCloudNormals<pcl::PointXYZ,pcl::Normal>(cloud, normals);
+
+   while (!viewer.wasStopped ())
+   {
+     viewer.spinOnce ();
+   }
+   return 0;
+}

@@ -1,0 +1,46 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/f2/catkin_ws_h/src/pcl_test/test.cpp
+pcl/point_types.h
+-
+pcl/io/pcd_io.h
+-
+pcl/kdtree/kdtree_flann.h
+-
+pcl/features/integral_image_normal.h
+-
+pcl/surface/mls.h
+-
+sensor_msgs/PointCloud2.h
+-
+pcl/ros/conversions.h
+-
+ros/ros.h
+-
+pcl/visualization/pcl_visualizer.h
+-
+pcl/common/transforms.h
+-
+pcl/filters/voxel_grid.h
+-
+pcl/filters/extract_indices.h
+-
+pcl/sample_consensus/model_types.h
+-
+pcl/sample_consensus/method_types.h
+-
+pcl/segmentation/sac_segmentation.h
+-
+eigen3/Eigen/Core
+-
+eigen3/Eigen/Geometry
+-
+fstream
+-
+

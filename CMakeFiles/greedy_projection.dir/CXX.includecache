@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/f2/catkin_ws_h/src/pcl_test/greedy_projection.cpp
+pcl/point_types.h
+-
+pcl/io/pcd_io.h
+-
+pcl/kdtree/kdtree_flann.h
+-
+pcl/features/normal_3d.h
+-
+pcl/surface/gp3.h
+-
+pcl/io/vtk_io.h
+-
+

@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/f2/catkin_ws_h/src/pcl_test/pcl_visualizer_demo.cpp
+iostream
+-
+boost/thread/thread.hpp
+-
+pcl/common/common_headers.h
+-
+pcl/features/normal_3d.h
+-
+pcl/io/pcd_io.h
+-
+pcl/visualization/pcl_visualizer.h
+-
+pcl/console/parse.h
+-
+
