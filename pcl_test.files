@@ -4,3 +4,4 @@
 /home/f2/catkin_ws_h/src/pcl_test/pcl_visualizer_demo.cpp
 /home/f2/catkin_ws_h/src/pcl_test/resampling.cpp
 /home/f2/catkin_ws_h/src/pcl_test/test.cpp
+passthrough.cpp

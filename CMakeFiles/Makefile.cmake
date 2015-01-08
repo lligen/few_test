@@ -58,6 +58,7 @@ SET(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/greedy_projection.dir/DependInfo.cmake"
   "CMakeFiles/matrix_transform.dir/DependInfo.cmake"
   "CMakeFiles/normal_estimation.dir/DependInfo.cmake"
+  "CMakeFiles/passthrough.dir/DependInfo.cmake"
   "CMakeFiles/pcl_visualizer_demo.dir/DependInfo.cmake"
   "CMakeFiles/resampling.dir/DependInfo.cmake"
   "CMakeFiles/test.dir/DependInfo.cmake"

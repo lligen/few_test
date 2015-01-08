@@ -26,3 +26,6 @@ target_link_libraries (greedy_projection ${PCL_LIBRARIES})
 
 add_executable (test test.cpp)
 target_link_libraries (test ${PCL_LIBRARIES})
+
+add_executable (passthrough passthrough.cpp)
+target_link_libraries (passthrough ${PCL_LIBRARIES})

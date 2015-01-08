@@ -155,13 +155,48 @@ clean: CMakeFiles/normal_estimation.dir/clean
 .PHONY : clean
 
 #=============================================================================
+# Target rules for target CMakeFiles/passthrough.dir
+
+# All Build rule for target.
+CMakeFiles/passthrough.dir/all:
+	$(MAKE) -f CMakeFiles/passthrough.dir/build.make CMakeFiles/passthrough.dir/depend
+	$(MAKE) -f CMakeFiles/passthrough.dir/build.make CMakeFiles/passthrough.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/f2/catkin_ws_h/src/pcl_test/CMakeFiles  4
+	@echo "Built target passthrough"
+.PHONY : CMakeFiles/passthrough.dir/all
+
+# Include target in all.
+all: CMakeFiles/passthrough.dir/all
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/passthrough.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/f2/catkin_ws_h/src/pcl_test/CMakeFiles 1
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/passthrough.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/f2/catkin_ws_h/src/pcl_test/CMakeFiles 0
+.PHONY : CMakeFiles/passthrough.dir/rule
+
+# Convenience name for target.
+passthrough: CMakeFiles/passthrough.dir/rule
+.PHONY : passthrough
+
+# clean rule for target.
+CMakeFiles/passthrough.dir/clean:
+	$(MAKE) -f CMakeFiles/passthrough.dir/build.make CMakeFiles/passthrough.dir/clean
+.PHONY : CMakeFiles/passthrough.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/passthrough.dir/clean
+.PHONY : clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/pcl_visualizer_demo.dir
 
 # All Build rule for target.
 CMakeFiles/pcl_visualizer_demo.dir/all:
 	$(MAKE) -f CMakeFiles/pcl_visualizer_demo.dir/build.make CMakeFiles/pcl_visualizer_demo.dir/depend
 	$(MAKE) -f CMakeFiles/pcl_visualizer_demo.dir/build.make CMakeFiles/pcl_visualizer_demo.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/f2/catkin_ws_h/src/pcl_test/CMakeFiles  4
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/f2/catkin_ws_h/src/pcl_test/CMakeFiles  5
 	@echo "Built target pcl_visualizer_demo"
 .PHONY : CMakeFiles/pcl_visualizer_demo.dir/all
 
@@ -196,7 +231,7 @@ clean: CMakeFiles/pcl_visualizer_demo.dir/clean
 CMakeFiles/resampling.dir/all:
 	$(MAKE) -f CMakeFiles/resampling.dir/build.make CMakeFiles/resampling.dir/depend
 	$(MAKE) -f CMakeFiles/resampling.dir/build.make CMakeFiles/resampling.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/f2/catkin_ws_h/src/pcl_test/CMakeFiles  5
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/f2/catkin_ws_h/src/pcl_test/CMakeFiles  6
 	@echo "Built target resampling"
 .PHONY : CMakeFiles/resampling.dir/all
 
@@ -231,7 +266,7 @@ clean: CMakeFiles/resampling.dir/clean
 CMakeFiles/test.dir/all:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/depend
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/f2/catkin_ws_h/src/pcl_test/CMakeFiles  6
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/f2/catkin_ws_h/src/pcl_test/CMakeFiles  7
 	@echo "Built target test"
 .PHONY : CMakeFiles/test.dir/all
 

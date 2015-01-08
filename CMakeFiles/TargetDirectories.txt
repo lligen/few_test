@@ -1,6 +1,7 @@
 /home/f2/catkin_ws_h/src/pcl_test/CMakeFiles/greedy_projection.dir
 /home/f2/catkin_ws_h/src/pcl_test/CMakeFiles/matrix_transform.dir
 /home/f2/catkin_ws_h/src/pcl_test/CMakeFiles/normal_estimation.dir
+/home/f2/catkin_ws_h/src/pcl_test/CMakeFiles/passthrough.dir
 /home/f2/catkin_ws_h/src/pcl_test/CMakeFiles/pcl_visualizer_demo.dir
 /home/f2/catkin_ws_h/src/pcl_test/CMakeFiles/resampling.dir
 /home/f2/catkin_ws_h/src/pcl_test/CMakeFiles/test.dir

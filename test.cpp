@@ -24,7 +24,6 @@
 using namespace std;
 
 #define  PI      3.1415
-#define  DB_INF  DBL_MAX
 #define  max(a, b)  (((a) > (b)) ? (a) : (b))
 
 void getAngDist(const pcl::ModelCoefficients::Ptr &n1,const pcl::ModelCoefficients::Ptr &n2,double& ang,double& normDist){
@@ -59,7 +58,7 @@ void computeTransform(const pcl::ModelCoefficients::Ptr &n1,const pcl::ModelCoef
 //    cout<<tran_x<<"  "<<tran_y<<"  "<<tran_z<<"  "<<endl;
     tr.translation() << -tran_x,-tran_y,-tran_z;
     tr.rotate(Eigen::AngleAxisf (alfa, Eigen::Vector3f::UnitZ()));
-    tr.rotate(Eigen::AngleAxisf (beta, Eigen::Vector3f::UnitY()));
+    tr.rotate(Eigen::AngleAxisf (-beta, Eigen::Vector3f::UnitY()));
     trans = tr;
 }
 //sub-sample filter
@@ -121,6 +120,18 @@ void getPlanePara(string& name,pcl::PointCloud<pcl::PointXYZ>::Ptr& cloudXYZPtr,
 
 int main (int argc, char** argv)
 {
+    Eigen::Matrix4d poses_ralative_to;
+    Eigen::Isometry3d transform;
+    poses_ralative_to<<  0.470592,   0.124928,   0.873462,   0.215916,       //loop1
+                          -0.0457367,   0.992049,  -0.117248,   0.216757,
+                           -0.881165,  0.0152267,   0.472565, -0.0442062,
+                                   0,          0,          0,          1;
+    transform = poses_ralative_to.cast<double>();
+    std::cout<<"initial transform is:"<<std::endl<<transform.matrix()<<std::endl;
+    transform = transform.inverse();
+    std::cout<<"inverse transform is:"<<std::endl<<transform.matrix()<<std::endl;
+
+
   // Load input file into a PointCloud<T> with an appropriate type
   //cloud 1
   pcl::PCLPointCloud2 cloud,cloud_filtered ;
@@ -177,14 +188,69 @@ int main (int argc, char** argv)
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloudXYZ2Ptr(&cloudXYZ2);
   pcl::fromPCLPointCloud2 (cloud2, cloudXYZ2);
 
-  //plane2 parameters
+  //get coefficients2 without transformed
+  if(1){
+      //plane2 parameters
+    //  pcl::ModelCoefficients::Ptr coefficients2Ptr(new pcl::ModelCoefficients);
+    //  pcl::PointIndices::Ptr inliers2 (new pcl::PointIndices ());
+    //  pcl::SACSegmentation<pcl::PointXYZ> seg2;
+    //  seg2.setOptimizeCoefficients (true);
+    //  seg2.setModelType (pcl::SACMODEL_PLANE);
+    //  seg2.setMethodType (pcl::SAC_RANSAC);
+    //  seg2.setMaxIterations (1000);
+    //  seg2.setDistanceThreshold (0.01);
+    //  pcl::PointCloud<pcl::PointXYZ>  cloud_p2, cloud_f2;
+    //  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_p2Ptr(&cloud_p2);
+    //  pcl::ExtractIndices<pcl::PointXYZ> extract2;
+    //  int nr_points2 = (int) cloudXYZ2.points.size ();;
+    //  while (cloudXYZ2.points.size () > 0.5 * nr_points2)
+    //  {
+    //      // Segment the largest planar component from the remaining cloud
+    //      seg2.setInputCloud (cloudXYZ2Ptr);
+    //      seg2.segment (*inliers2, *coefficients2Ptr);
+    //      if (inliers2->indices.size () == 0)
+    //      {
+    //        std::cerr << "Could not estimate a planar model for the given dataset." << std::endl;
+    //        break;
+    //      }
+    //      // Extract the inliers
+    //      extract2.setInputCloud (cloudXYZ2Ptr);
+    //      extract2.setIndices (inliers2);
+    //      extract2.setNegative (false);
+    //      extract2.filter (cloud_p2);
+    //      // Create the filtering object
+    //      extract2.setNegative (true);
+    //      extract2.filter (cloud_f2);
+    //      cloudXYZ2.swap (cloud_f2);
+    //   }
+  }
+
+  //store the good result
+  double theta,theta_m,distance,distance_m;
+  theta_m = 90.0;distance_m = 100.0;
+  pcl::ModelCoefficients coefficients_best;
+  pcl::ModelCoefficients::Ptr coefficients_bestPtr(&coefficients_best);
+  pcl::PointCloud<pcl::PointXYZ> cloudXYZ2_best;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloudXYZ2_bestPtr(&cloudXYZ2_best);
+
+  Eigen::Affine3f first_transform= Eigen::Affine3f::Identity();//
+  pcl::PointCloud<pcl::PointXYZ> transformed;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloudPtr (&transformed);
+  float tr_x,tr_y,tr_z;float x,y,z,w;int k = 0;
+
+  //added transform initialize
+  Eigen::Affine3f transform_result=Eigen::Affine3f::Identity();
+  Eigen::Affine3f second_transform=Eigen::Affine3f::Identity();
+  pcl::PointCloud<pcl::PointXYZ> transformed_twice;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloud_aPtr (&transformed_twice);
+
+  std::ifstream ifile("/home/f2/catkin_ws_h/devel/lib/rgbdslam_2kinect/test.txt",std::ios::in);
+  ifile >>tr_x>>tr_y>>tr_z;
+  ifile >>x>>y>>z>>w;
   pcl::ModelCoefficients::Ptr coefficients2Ptr(new pcl::ModelCoefficients);
   pcl::PointIndices::Ptr inliers2 (new pcl::PointIndices ());
-  // Create the segmentation object
   pcl::SACSegmentation<pcl::PointXYZ> seg2;
-  // Optional
   seg2.setOptimizeCoefficients (true);
-  // Mandatory
   seg2.setModelType (pcl::SACMODEL_PLANE);
   seg2.setMethodType (pcl::SAC_RANSAC);
   seg2.setMaxIterations (1000);
@@ -192,122 +258,136 @@ int main (int argc, char** argv)
   pcl::PointCloud<pcl::PointXYZ>  cloud_p2, cloud_f2;
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_p2Ptr(&cloud_p2);
   pcl::ExtractIndices<pcl::PointXYZ> extract2;
-
-  //store the good result
-  double theta,theta_m,distance,distance_m;
-  theta_m = 90.0;distance_m = 100.0;
-  pcl::ModelCoefficients::Ptr coefficients_bestPtr(new pcl::ModelCoefficients);
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloudXYZ2_bestPtr(new pcl::PointCloud<pcl::PointXYZ>);
-
-  Eigen::Affine3f transform_2;// = Eigen::Affine3f::Identity()
-  pcl::PointCloud<pcl::PointXYZ> transformed;
-  pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloudPtr (&transformed);
-  int nr_points2;float x,y,z,w;int k = 0;
-
-  //added transform initialize
-  Eigen::Affine3f transform_3=Eigen::Affine3f::Identity();
-  pcl::PointCloud<pcl::PointXYZ> transformed_a;
-  pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloud_aPtr (&transformed_a);
-
-  std::ifstream ifile("/home/f2/catkin_ws_h/devel/lib/rgbdslam_2kinect/test.txt",std::ios::in);
+  int nr_points2 = (int) cloudXYZ2.points.size ();
   while (!ifile.eof())
   {
-    transform_2.setIdentity();
-    ifile >>transform_2.translation().x()>>transform_2.translation().y() >>transform_2.translation().z();
-    ifile >>x>>y>>z>>w;
-    transform_2.rotate (Eigen::Quaternionf(w,x,y,z));
-    //cout<< transform_2.matrix()<<endl;
-    pcl::transformPointCloud (cloudXYZ2, transformed, transform_2);
-
-    nr_points2 = (int) transformed.points.size ();
-    // While 30% of the original cloud is still there
-    while (transformed.points.size () > 0.5 * nr_points2)
-    {
-        // Segment the largest planar component from the remaining cloud
-        seg2.setInputCloud (transformed_cloudPtr);
-        seg2.segment (*inliers2, *coefficients2Ptr);
-        if (inliers2->indices.size () == 0)
-        {
-          std::cerr << "Could not estimate a planar model for the given dataset." << std::endl;
-          break;
-        }
-        // Extract the inliers
-        extract2.setInputCloud (transformed_cloudPtr);
-        extract2.setIndices (inliers2);
-        extract2.setNegative (false);
-        extract2.filter (cloud_p2);
-        // Create the filtering object
-        extract2.setNegative (true);
-        extract2.filter (cloud_f2);
-        transformed.swap (cloud_f2);
-
-     }
-     k++;
-
+      k++;
+      first_transform.setIdentity();
+      first_transform.translation()<<tr_x,tr_y,tr_z;
+      first_transform.rotate (Eigen::Quaternionf(w,x,y,z));
+      pcl::transformPointCloud (cloudXYZ2, transformed, first_transform);
+      //get coefficients2 after first transform
+      if(1){
+          while (transformed.points.size () > 0.5 * nr_points2)
+          {
+              // Segment the largest planar component from the remaining cloud
+              seg2.setInputCloud (transformed_cloudPtr);
+              seg2.segment (*inliers2, *coefficients2Ptr);
+              if (inliers2->indices.size () == 0)
+              {
+                std::cerr << "Could not estimate a planar model for the given dataset." << std::endl;
+                break;
+              }
+              // Extract the inliers
+              extract2.setInputCloud (transformed_cloudPtr);
+              extract2.setIndices (inliers2);
+              extract2.setNegative (false);
+              extract2.filter (cloud_p2);
+              // Create the filtering object
+              extract2.setNegative (true);
+              extract2.filter (cloud_f2);
+              transformed.swap (cloud_f2);
+           }
+      }
 //     std::cerr << "plane1 para is :" << *coefficientsPtr <<std::endl;
 //     std::cerr << "plane2 para is :" << *coefficients2Ptr <<std::endl;
+
      getAngDist(coefficientsPtr,coefficients2Ptr,theta,distance);
-     std::cout << "angle is : " << theta <<"  dis is: "<<distance<<std::endl;
-     if(distance <distance_m){
-        theta_m = theta;
-        distance_m = distance;
-        coefficients_bestPtr = coefficients2Ptr;
-        cloudXYZ2_bestPtr = cloud_p2Ptr;
+     std::cerr<<"ang is: "<<theta<<"  dis is: "<<distance<<std::endl;
+     //NEED TO FIXED
+    if(distance <3){
+         if(theta < theta_m){
+            theta_m = theta;
+            distance_m = distance;
+            coefficients_best = *coefficients2Ptr;
+            cloudXYZ2_best = *cloud_p2Ptr;
+         }
      }
 
-    //added transform compute
-     transform_3.setIdentity();
-     computeTransform(coefficientsPtr,coefficients2Ptr,transform_3);
-     pcl::transformPointCloud (cloud_p2, transformed_a, transform_3);
+    //second transform compute
+     second_transform.setIdentity();
+     computeTransform(coefficientsPtr,coefficients2Ptr,second_transform);
+     pcl::transformPointCloud (cloud_p2, transformed_twice, second_transform);
+     transform_result.setIdentity();
+     transform_result = first_transform *second_transform;
+//     cout<<"first transform "<<first_transform.matrix()<<endl;
+//     cout<<"second transform "<<second_transform.matrix()<<endl;
+     cerr<<"result transform "<<transform_result.matrix()<<endl;
 
-     //  // visualize normals
-     pcl::visualization::PCLVisualizer viewer("PCL Viewer");
-     viewer.addCoordinateSystem();
-     viewer.setBackgroundColor (0.0, 0.0, 0.5);
 
-     pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> cloudXYZ_color_handler (cloud_pPtr, 0, 255, 255);
-     viewer.addPointCloud (cloud_pPtr, cloudXYZ_color_handler, "cloud1");
-     pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> cloud_p2_handler (cloud_p2Ptr, 100, 100, 0);
-     viewer.addPointCloud (cloud_p2Ptr, cloud_p2_handler, "cloud_p2_cloud");
-     pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> transformed_a_handler (transformed_cloud_aPtr, 100, 100, 100);
-     viewer.addPointCloud (transformed_cloud_aPtr, transformed_a_handler, "transformed_cloud");
-     ////  viewer.addPointCloudNormals<pcl::PointXYZ,pcl::PointNormal>(cloudXYZPtr, mlsPtr);
-     //// viewer.addPointCloudNormals<pcl::PointXYZ,pcl::Normal>(cloudXYZPtr, normalsPtr);
-     while (!viewer.wasStopped ())
-     {
-       viewer.spinOnce ();
-     }
+//     pcl::visualization::PCLVisualizer viewer3("PCL Viewer");
+//     viewer3.addCoordinateSystem();
+//     viewer3.setBackgroundColor (0.0, 0.0, 0);
 
+//     //view first and second transformed poindcloud
+//     if(1){
+//         pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> cloudXYZ_color_handler1 (cloud_pPtr, 0, 0, 255);
+//         viewer3.addPointCloud (cloud_pPtr, cloudXYZ_color_handler1, "cloud11");
+//         pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> cloud_p2_handler1 (cloud_p2Ptr, 0, 255, 0);
+//         viewer3.addPointCloud (cloud_p2Ptr, cloud_p2_handler1, "cloud_p2_cloud1");
+//         pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> cloud_p2_handler (transformed_cloud_aPtr, 255, 0, 0);
+//         viewer3.addPointCloud (transformed_cloud_aPtr, cloud_p2_handler, "cloud_p2_cloud");
+//     }
+//     while (!viewer3.wasStopped ())
+//     {
+//       viewer3.spinOnce ();
+//     }
+
+     ifile >>tr_x>>tr_y>>tr_z;
+     ifile >>x>>y>>z>>w;
+  }
+  if(ifile.eof()){
+      cout<<"end of file reached!!"<<endl;
   }
   cout<<k<<endl;
   std::cerr << "best candidate angle is : " << theta_m<<"  dis is: "<<distance_m<<std::endl;
   ifile.close();
 
-//  //added transform
-//  Eigen::Affine3f transform_3;
-//  transform_3.setIdentity();
-//  pcl::PointCloud<pcl::PointXYZ> transformed_a;
-//  pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloud_aPtr (&transformed_a);
-//  computeTransform(coefficientsPtr,coefficients_bestPtr,transform_3);
-//  pcl::transformPointCloud (cloud_p2, transformed_a, transform_3);
+    //second best transform compute
+    Eigen::Affine3f transform_bs_result=Eigen::Affine3f::Identity();
+    Eigen::Affine3f transform_bssecond=Eigen::Affine3f::Identity();
+    pcl::PointCloud<pcl::PointXYZ> transformed_bs;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloud_bsPtr (&transformed_bs);
+    computeTransform(coefficientsPtr,coefficients_bestPtr,transform_bssecond);
+    pcl::transformPointCloud (cloud_p2, transformed_bs, transform_bssecond);
+    transform_bs_result = first_transform *transform_bssecond;
+    cout<<"bs_result~~~~~~"<<transform_bs_result.matrix()<<endl;
 
-//  //  // visualize normals
-//  pcl::visualization::PCLVisualizer viewer("PCL Viewer");
-//  viewer.addCoordinateSystem();
-//  viewer.setBackgroundColor (0.0, 0.0, 0.5);
+  //  // visualize normals
+  pcl::visualization::PCLVisualizer viewer2("PCL Viewer2");
+  viewer2.addCoordinateSystem();
+  viewer2.setBackgroundColor (0.0, 0.0, 0);
+  //view initial pointcloud
+  if(1){
+//  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> cloudXYZ_color_handler2 (cloudXYZPtr, 0, 0, 255);
+//  viewer2.addPointCloud (cloudXYZPtr, cloudXYZ_color_handler2, "cloud12");
+//  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> transformed_handler2 (cloudXYZ2Ptr, 0, 255, 0);
+//  viewer2.addPointCloud (cloudXYZ2Ptr, transformed_handler2, "transformed_cloud2");
+  }
 
-//  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> cloudXYZ_color_handler (cloud_pPtr, 0, 255, 255);
-//  viewer.addPointCloud (cloud_pPtr, cloudXYZ_color_handler, "cloud1");
-//  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> transformed_handler2 (cloudXYZ2_bestPtr, 100, 100, 0);
-//  viewer.addPointCloud (cloudXYZ2_bestPtr, transformed_handler2, "transformed_cloud22");
-//  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> transformed_handler22 (transformed_cloud_aPtr, 100, 100, 100);
-//  viewer.addPointCloud (transformed_cloud_aPtr, transformed_handler22, "transformed_cloud122");
-//  ////  viewer.addPointCloudNormals<pcl::PointXYZ,pcl::PointNormal>(cloudXYZPtr, mlsPtr);
-//  //// viewer.addPointCloudNormals<pcl::PointXYZ,pcl::Normal>(cloudXYZPtr, normalsPtr);
-//  while (!viewer.wasStopped ())
-//  {
-//    viewer.spinOnce ();
-//  }
+  //view filtered pointcloud--plane
+  if(1){
+//      pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> cloudXYZ_color_handler2 (cloud_pPtr, 0, 0, 255);
+//      viewer2.addPointCloud (cloud_pPtr, cloudXYZ_color_handler2, "cloud12");
+//      pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> transformed_handler2 (cloud_p2Ptr, 0, 255, 0);
+//      viewer2.addPointCloud (cloud_p2Ptr, transformed_handler2, "transformed_cloud2");
+  }
+
+  //view best first and second pointcloud--plane
+  if(1){
+      pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> cloudXYZ_color_handler2 (cloud_pPtr, 0, 0, 255);
+      viewer2.addPointCloud (cloud_pPtr, cloudXYZ_color_handler2, "cloud12");
+      pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> transformed_handler2 (cloudXYZ2_bestPtr, 0, 255, 0);
+      viewer2.addPointCloud (cloudXYZ2_bestPtr, transformed_handler2, "transformed_cloud2");
+      pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> transformed_handler (transformed_cloud_bsPtr, 255, 0, 0);
+      viewer2.addPointCloud (transformed_cloud_bsPtr, transformed_handler, "transformed_cloud22");
+      ////  viewer.addPointCloudNormals<pcl::PointXYZ,pcl::PointNormal>(cloudXYZPtr, mlsPtr);
+      //// viewer.addPointCloudNormals<pcl::PointXYZ,pcl::Normal>(cloudXYZPtr, normalsPtr);
+  }
+  while (!viewer2.wasStopped ())
+  {
+    viewer2.spinOnce ();
+  }
 
 
 

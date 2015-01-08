@@ -135,6 +135,19 @@ normal_estimation/fast:
 .PHONY : normal_estimation/fast
 
 #=============================================================================
+# Target rules for targets named passthrough
+
+# Build rule for target.
+passthrough: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 passthrough
+.PHONY : passthrough
+
+# fast build rule for target.
+passthrough/fast:
+	$(MAKE) -f CMakeFiles/passthrough.dir/build.make CMakeFiles/passthrough.dir/build
+.PHONY : passthrough/fast
+
+#=============================================================================
 # Target rules for targets named pcl_visualizer_demo
 
 # Build rule for target.
@@ -245,6 +258,30 @@ normal_estimation_using_integral_images.cpp.s:
 	$(MAKE) -f CMakeFiles/normal_estimation.dir/build.make CMakeFiles/normal_estimation.dir/normal_estimation_using_integral_images.cpp.s
 .PHONY : normal_estimation_using_integral_images.cpp.s
 
+passthrough.o: passthrough.cpp.o
+.PHONY : passthrough.o
+
+# target to build an object file
+passthrough.cpp.o:
+	$(MAKE) -f CMakeFiles/passthrough.dir/build.make CMakeFiles/passthrough.dir/passthrough.cpp.o
+.PHONY : passthrough.cpp.o
+
+passthrough.i: passthrough.cpp.i
+.PHONY : passthrough.i
+
+# target to preprocess a source file
+passthrough.cpp.i:
+	$(MAKE) -f CMakeFiles/passthrough.dir/build.make CMakeFiles/passthrough.dir/passthrough.cpp.i
+.PHONY : passthrough.cpp.i
+
+passthrough.s: passthrough.cpp.s
+.PHONY : passthrough.s
+
+# target to generate assembly for a file
+passthrough.cpp.s:
+	$(MAKE) -f CMakeFiles/passthrough.dir/build.make CMakeFiles/passthrough.dir/passthrough.cpp.s
+.PHONY : passthrough.cpp.s
+
 pcl_visualizer_demo.o: pcl_visualizer_demo.cpp.o
 .PHONY : pcl_visualizer_demo.o
 
@@ -327,6 +364,7 @@ help:
 	@echo "... greedy_projection"
 	@echo "... matrix_transform"
 	@echo "... normal_estimation"
+	@echo "... passthrough"
 	@echo "... pcl_visualizer_demo"
 	@echo "... rebuild_cache"
 	@echo "... resampling"
@@ -340,6 +378,9 @@ help:
 	@echo "... normal_estimation_using_integral_images.o"
 	@echo "... normal_estimation_using_integral_images.i"
 	@echo "... normal_estimation_using_integral_images.s"
+	@echo "... passthrough.o"
+	@echo "... passthrough.i"
+	@echo "... passthrough.s"
 	@echo "... pcl_visualizer_demo.o"
 	@echo "... pcl_visualizer_demo.i"
 	@echo "... pcl_visualizer_demo.s"

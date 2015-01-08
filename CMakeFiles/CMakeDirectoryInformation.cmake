@@ -14,6 +14,7 @@ SET(CMAKE_C_INCLUDE_PATH
   "/usr/include/pcl-1.7"
   "/usr/include/eigen3"
   "/usr/include/ni"
+  "/usr/include/openni2"
   "/usr/include/qhull"
   )
 SET(CMAKE_CXX_INCLUDE_PATH ${CMAKE_C_INCLUDE_PATH})
